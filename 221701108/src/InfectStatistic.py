@@ -7,7 +7,14 @@ ProvinceList=['全国','安徽','北京','重庆','福建','甘肃','广东','�
 InfectTypeList=['ip','sp','cure','dead']
 InfectTypeListCN=['感染患者','疑似患者','治愈','死亡']
 
-
+'''
+    文件操作类
+    负责文件的读写
+    function：
+        writeLine(str)
+        readLine()
+        close()
+'''
 class FileOperator:
     def __init__(self,path):
         self.path=path
@@ -53,6 +60,13 @@ class FileOperator:
             self.fileObj.close()
 
 
+'''
+    命令处理类
+    负责命令的参数验证、
+        获取操作文件列表、
+        得到输出文件、
+        各项数据统计
+'''
 class CommandHandler:
     def __init__(self,inPath,outPath,provinceList,infectTypeList,date):
         self.logPath=inPath
