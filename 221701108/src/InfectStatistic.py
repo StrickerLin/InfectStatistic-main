@@ -7,14 +7,7 @@ ProvinceList=['全国','安徽','北京','重庆','福建','甘肃','广东','�
 InfectTypeList=['ip','sp','cure','dead']
 InfectTypeListCN=['感染患者','疑似患者','治愈','死亡']
 
-'''
-    文件操作类
-    负责文件的读写
-    function：
-        writeLine(str)
-        readLine()
-        close()
-'''
+
 class FileOperator:
     def __init__(self,path):
         self.path=path
@@ -56,17 +49,11 @@ class FileOperator:
         return self.fileObj.readline()
 
     def close(self):
-        if not self.fileObj.closed:
-            self.fileObj.close()
+        if self.fileObj!=None and not self.fileObj.closed:
+            return self.fileObj.close()
+        return True
 
 
-'''
-    命令处理类
-    负责命令的参数验证、
-        获取操作文件列表、
-        得到输出文件、
-        各项数据统计
-'''
 class CommandHandler:
     def __init__(self,inPath,outPath,provinceList,infectTypeList,date):
         self.logPath=inPath
@@ -79,44 +66,50 @@ class CommandHandler:
         self.date=date
 
     def isArgsRightful(self):
-        tag = True
-        if not os.path.exists(self.logPath):
-            tag=False
+        if self.logPath==None or not os.path.exists(self.logPath):
+            return False
+        #print("log right")
+        if self.outPath==None:
+            return False
 
         for item in self.provinceList:
             if item not in ProvinceList:
-                tag=False
-
+                return False
+        #print("province right")
         for item in self.infectTypeList:
             if item not in InfectTypeList:
-                tag=False
+                return False
+        #print("type right")
 
         if self.date:
             fileList=os.listdir(self.logPath)
             for file in fileList:
                date1=file.split(".")[0]
-               if not dateCompare(date1,self.date):
-                   tag=False
-        return tag
+               if dateCompare(date1,self.date):
+                   return True
+        else:
+            return True
+        return False
 
     def getOutputFile(self):
         foperator=FileOperator(self.outPath)
         staticList=self.getStaticList()
         if len(self.provinceList)!=0:
-            for p in self.provinceList:
-                line=p+' '
-                for t in self.infectTypeList:
-                    line=line+InfectTypeListCN[InfectTypeList.index(t)]+" "+str(staticList[InfectTypeList.index(t)][ProvinceList.index(p)])+'人 '
-                foperator.writeLine(line)
+            for p in ProvinceList:
+                if p in self.provinceList:
+                    line=p+' '
+                    for t in self.infectTypeList:
+                        line=line+InfectTypeListCN[InfectTypeList.index(t)]+" "+str(staticList[InfectTypeList.index(t)][ProvinceList.index(p)])+'人 '
+                    foperator.writeLine(line)
         else:
             for p in ProvinceList:
-                line=p,' '
+                line=p+' '
                 count=0
                 for t in self.infectTypeList:
                     count+=staticList[InfectTypeList.index(t)][ProvinceList.index(p)]
                 if count!=0:
                     for t in self.infectTypeList:
-                        line = line,InfectTypeListCN[InfectTypeList.index(t)],staticList[InfectTypeList.index(t)][ProvinceList.index(p)],'人 '
+                        line = line+InfectTypeListCN[InfectTypeList.index(t)]+" "+str(staticList[InfectTypeList.index(t)][ProvinceList.index(p)])+'人 '
                     foperator.writeLine(line)
         foperator.close()
 
@@ -185,8 +178,7 @@ def findInformation(informationName):
 def dateCompare(datestr1,datestr2):
     time1=time.mktime(time.strptime(datestr1,"%Y-%m-%d"))
     time2=time.mktime(time.strptime(datestr2,"%Y-%m-%d"))
-    return time1>time2
-    
+    return time1>=time2    
 
 if sys.argv[1]!='list':
     print('Command Error')
