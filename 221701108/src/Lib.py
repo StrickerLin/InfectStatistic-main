@@ -137,6 +137,7 @@ class CommandHandler:
                     if obj.group(2) in InfectTypeListCN:
                         list[InfectTypeListCN.index(obj.group(2))][ProvinceList.index(obj.group(1))]+=\
                               int(obj.group(3))
+                        list[InfectTypeListCN.index(obj.group(2))][0]+=int(obj.group(3))
                 obj=re.match("(.+) (.+) 流入 (.+) (\\d+)人",line)
                 if obj:
                     if obj.group(2) in InfectTypeListCN and \
@@ -150,17 +151,22 @@ class CommandHandler:
                 if obj:
                     list[InfectTypeList.index("ip")][ProvinceList.index(obj.group(1))]-=int(obj.group(2))
                     list[InfectTypeList.index("dead")][ProvinceList.index(obj.group(1))]+=int(obj.group(2))
+                    list[InfectTypeList.index("dead")][0]+=int(obj.group(2))
                 obj=re.match("(.+) 治愈 (\\d+)人",line)
                 if obj:
                     list[InfectTypeList.index("ip")][ProvinceList.index(obj.group(1))]-=int(obj.group(2))
                     list[InfectTypeList.index("cure")][ProvinceList.index(obj.group(1))]+=int(obj.group(2))
+                    list[InfectTypeList.index("cure")][0]+=int(obj.group(2))
                 obj=re.match("(.+) .+ 确诊感染 (\\d+)人",line)
                 if obj:
                     list[InfectTypeList.index("sp")][ProvinceList.index(obj.group(1))]-=int(obj.group(2))
                     list[InfectTypeList.index("ip")][ProvinceList.index(obj.group(1))]+=int(obj.group(2))
+                    list[InfectTypeList.index("sp")][0]-=int(obj.group(2))
+                    list[InfectTypeList.index("ip")][0]+=int(obj.group(2))
                 obj=re.match("(.+) 排除 .+ (\\d+)人",line)
                 if obj:
                     list[InfectTypeList.index("sp")][ProvinceList.index(obj.group(1))]-=int(obj.group(2))
+                    list[InfectTypeList.index("sp")][0]-=int(obj.group(2))
                 line = foperator.readLine()
         return list
 
